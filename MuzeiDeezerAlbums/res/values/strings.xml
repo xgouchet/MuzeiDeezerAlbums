@@ -1,0 +1,42 @@
+<resources>
+
+	<string name="app_name">Deezer Muzei</string>
+
+	<!--  -->
+	<string name="source_album">Deezer</string>
+	<string name="source_album_desc">Covers from Deezer Albums</string>
+
+	<!--  -->
+	<string name="action_login">Log In</string>
+	<string name="action_logout">Log Out</string>
+	<string name="action_edit">Edit</string>
+	<string name="action_add_album">Add Album</string>
+	<string name="action_schedule">Change interval</string>
+
+	<!--  -->
+	<string name="loading">Loading &#8230; </string>
+	<string name="anonymous">Anonymous</string>
+	<string name="user_avatar">User Avatar</string>
+	<string name="favorite_albums">My favorite albums</string>
+	<string name="playing_albums">Last played track</string>
+	<string name="edito_albums">Editorial albums</string>
+	<string name="custom_albums">Custom albums</string>
+
+	<!--  -->
+	<string name="custom_album_empty">No album selected yet</string>
+	<string name="select_custom_album">Select custom albums</string>
+
+	<!-- Error messages -->
+	<string name="deezer_error_during_login">Deezer error during login</string>
+	<string name="deezer_too_many_skips">You have skipped too many tracks in this radio. Skip will be disabled for a while</string>
+	<string name="invalid_credentials">Invalid credentials</string>
+	<string name="login_cancelled">Login cancelled</string>
+	<string name="ui_custom_track_list">This activity plays a custom list of tracks, which is not a radio, a playlist or an album</string>
+
+	<!--  -->
+	<string name="desc_edito">"Display covers of albums in the week's selection. You can edit the genre of music for the selection. "</string>
+	<string name="desc_favorites">"Display covers of albums you have added to favorites on your Deezer account."</string>
+	<string name="desc_last_played">"Display the cover of the album of the last track you played. It works in most tracks played with Deezer, and may even recognise tracks from other players."</string>
+	<string name="desc_custom">"Display the covers of albums you pick by hand. "</string>
+
+</resources>

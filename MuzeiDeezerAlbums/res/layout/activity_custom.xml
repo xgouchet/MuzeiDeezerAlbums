@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="@dimen/activity_padding" >
+
+	<ListView
+		android:id="@android:id/list"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clipToPadding="false"
+		android:drawSelectorOnTop="true"
+		android:paddingLeft="@dimen/listview_padding"
+		android:paddingRight="@dimen/listview_padding"
+		android:scrollbarStyle="outsideOverlay" />
+
+	<RelativeLayout
+		android:id="@+id/draw_insets_frame_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" >
+
+		<LinearLayout
+			android:id="@android:id/empty"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="@dimen/listview_padding" >
+
+			<ImageView
+				android:layout_width="@dimen/big_image_size"
+				android:layout_height="@dimen/big_image_size"
+				android:src="@drawable/album_unknown" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/margin_button"
+				android:fontFamily="sans-serif-condensed"
+				android:padding="@dimen/text_padding"
+				android:text="@string/custom_album_empty"
+				android:textSize="22sp"
+				android:textStyle="italic" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:fontFamily="sans-serif-condensed"
+				android:padding="@dimen/text_padding"
+				android:text="@string/select_custom_album"
+				android:textColor="?android:attr/textColorHint"
+				android:textSize="16sp"
+				android:textStyle="italic" />
+		</LinearLayout>
+
+		<ImageButton
+			android:id="@+id/add_albums_button"
+			android:layout_width="@dimen/small_image_size"
+			android:layout_height="@dimen/small_image_size"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			android:layout_gravity="bottom|center_horizontal"
+			android:layout_marginBottom="@dimen/margin_button"
+			android:background="@drawable/white_circle_button"
+			android:contentDescription="@string/action_add_album"
+			android:src="@drawable/ic_add_photos" />
+	</RelativeLayout>
+
+</FrameLayout>

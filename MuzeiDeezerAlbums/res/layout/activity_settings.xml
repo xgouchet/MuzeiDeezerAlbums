@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="@dimen/activity_padding" >
+
+	<ImageView
+		android:id="@+id/user_avatar"
+		android:layout_width="@dimen/medium_image_size"
+		android:layout_height="@dimen/medium_image_size"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"
+		android:contentDescription="@string/user_avatar"
+		android:src="@drawable/user_anonymous" />
+
+	<TextView
+		android:id="@+id/user_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/user_avatar"
+		android:layout_centerHorizontal="true"
+		android:padding="@dimen/text_padding"
+		android:text="@string/anonymous"
+		android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<RadioGroup
+		android:id="@+id/group_source"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/user_name"
+		android:padding="@dimen/text_padding" >
+
+		<RadioButton
+			android:id="@+id/radio_edito_albums"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/edito_albums" />
+
+		<RadioButton
+			android:id="@+id/radio_custom_albums"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/custom_albums" />
+
+		<RadioButton
+			android:id="@+id/radio_playing_albums"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/playing_albums" />
+
+		<RadioButton
+			android:id="@+id/radio_fav_albums"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/favorite_albums" />
+	</RadioGroup>
+
+	<TextView
+		android:id="@+id/text_tip"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/group_source"
+		android:layout_alignParentBottom="true"
+		android:layout_alignRight="@+id/group_source"
+		android:layout_below="@+id/group_source"
+		android:padding="@dimen/text_padding"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:textStyle="italic"
+		android:typeface="serif" />
+
+</RelativeLayout>

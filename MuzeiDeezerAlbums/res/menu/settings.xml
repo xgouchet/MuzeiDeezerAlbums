@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item
+		android:id="@+id/action_login"
+		android:icon="@drawable/ic_action_login"
+		android:showAsAction="ifRoom"
+		android:title="@string/action_login"/>
+	<item
+		android:id="@+id/action_edit"
+		android:icon="@drawable/ic_action_edit"
+		android:showAsAction="always"
+		android:title="@string/action_edit"/>
+	<item
+		android:id="@+id/action_schedule"
+		android:icon="@drawable/ic_action_schedule"
+		android:showAsAction="always"
+		android:title="@string/action_schedule"/>
+	<item
+		android:id="@+id/action_logout"
+		android:showAsAction="never"
+		android:title="@string/action_logout"/>
+
+</menu>
