@@ -7,11 +7,8 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,17 +31,19 @@ import com.deezer.sdk.network.request.event.JsonRequestListener;
 import com.deezer.sdk.network.request.event.OAuthException;
 
 import fr.xgouchet.deezer.muzei.R;
+import fr.xgouchet.deezer.muzei.data.Preferences;
 import fr.xgouchet.deezer.muzei.task.FetchUserThumbnailTask;
 import fr.xgouchet.deezer.muzei.task.FetchUserThumbnailTask.UserThumbnailTaskListener;
 import fr.xgouchet.deezer.muzei.util.Constants;
-import fr.xgouchet.deezer.muzei.util.Preferences;
 
 
+/**
+ * 
+ * @author Xavier Gouchet
+ * 
+ */
 public class SettingsActivity extends Activity {
     
-    
-    private static final int REQUEST_CUSTOM = 0xFACE;
-    private static final int REQUEST_EDITO = 0xFADE;
     
     private boolean mIsLoggedIn = false;
     private DeezerConnect mConnect;
@@ -54,7 +53,6 @@ public class SettingsActivity extends Activity {
     private TextView mUserName;
     
     private RadioButton mSourceFavs, mSourceEdito, mSourceCustom, mSourcePlaying;
-    private int mCurrentSource;
     private TextView mTipText;
     
     @Override
@@ -90,11 +88,10 @@ public class SettingsActivity extends Activity {
     protected void onResume() {
         super.onResume();
         
+        Preferences.loadPreferences(this);
+        
         // Restore all 
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-        mCurrentSource = prefs.getInt(Preferences.PREF_SOURCE, 0);
-        switch (mCurrentSource) {
+        switch (Preferences.getSourceType()) {
             case Preferences.SOURCE_EDITO:
                 mSourceEdito.setChecked(true);
                 break;
@@ -134,7 +131,7 @@ public class SettingsActivity extends Activity {
         menu.findItem(R.id.action_login).setVisible(!mIsLoggedIn);
         menu.findItem(R.id.action_logout).setVisible(mIsLoggedIn);
         
-        switch (mCurrentSource) {
+        switch (Preferences.getSourceType()) {
             case Preferences.SOURCE_CUSTOM:
             case Preferences.SOURCE_EDITO:
                 menu.findItem(R.id.action_edit).setEnabled(true);
@@ -195,8 +192,11 @@ public class SettingsActivity extends Activity {
         setUserLogged(false);
     }
     
+    /**
+     * Launch another activity for additional options
+     */
     private void editSourceOptions() {
-        switch (mCurrentSource) {
+        switch (Preferences.getSourceType()) {
             case Preferences.SOURCE_EDITO:
                 Intent editoIntent = new Intent(this, SelectEditoActivity.class);
                 startActivity(editoIntent);
@@ -215,6 +215,8 @@ public class SettingsActivity extends Activity {
     private void setUserLogged(final boolean logged) {
         
         boolean change = logged != mIsLoggedIn;
+        
+        mSourceFavs.setEnabled(logged);
         
         if (change) {
             mIsLoggedIn = logged;
@@ -239,15 +241,17 @@ public class SettingsActivity extends Activity {
             
         }
         
-        mSourceFavs.setEnabled(mIsLoggedIn);
+        
     }
     
-    
+    /**
+     * Updates the displayed tip under the list of sources
+     */
     private void updateTip() {
         
         int text = 0;
         
-        switch (mCurrentSource) {
+        switch (Preferences.getSourceType()) {
             case Preferences.SOURCE_EDITO:
                 text = R.string.desc_edito;
                 break;
@@ -283,11 +287,7 @@ public class SettingsActivity extends Activity {
                 
                 @Override
                 public void run() {
-                    // Save the user id
-                    Editor editor = PreferenceManager.getDefaultSharedPreferences(
-                            SettingsActivity.this).edit();
-                    editor.putLong(Preferences.PREF_USER_ID, user.getId());
-                    editor.apply();
+                    Preferences.saveCurrentUser(SettingsActivity.this, user);
                     
                     // Update the view 
                     mUserName.setText(user.getName());
@@ -395,28 +395,25 @@ public class SettingsActivity extends Activity {
         @Override
         public void onCheckedChanged(final RadioGroup group, final int checkedId) {
             Log.i("Radio", "Checked " + checkedId);
-            
+            int source;
             switch (checkedId) {
             
                 case R.id.radio_fav_albums:
-                    mCurrentSource = Preferences.SOURCE_FAVS;
+                    source = Preferences.SOURCE_FAVS;
                     break;
                 case R.id.radio_custom_albums:
-                    mCurrentSource = Preferences.SOURCE_CUSTOM;
+                    source = Preferences.SOURCE_CUSTOM;
                     break;
                 case R.id.radio_playing_albums:
-                    mCurrentSource = Preferences.SOURCE_LAST_PLAYED;
+                    source = Preferences.SOURCE_LAST_PLAYED;
                     break;
                 case R.id.radio_edito_albums:
                 default:
-                    mCurrentSource = Preferences.SOURCE_EDITO;
+                    source = Preferences.SOURCE_EDITO;
                     break;
             }
             
-            Editor editor = PreferenceManager.getDefaultSharedPreferences(
-                    SettingsActivity.this).edit();
-            editor.putInt(Preferences.PREF_SOURCE, mCurrentSource);
-            editor.apply();
+            Preferences.saveSourceType(SettingsActivity.this, source);
             
             invalidateOptionsMenu();
             

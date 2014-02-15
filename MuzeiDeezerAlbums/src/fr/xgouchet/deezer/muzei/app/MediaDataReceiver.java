@@ -8,13 +8,10 @@ import org.json.JSONException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.deezer.sdk.model.Album;
 import com.deezer.sdk.model.PaginatedList;
 import com.deezer.sdk.model.Track;
 import com.deezer.sdk.network.connect.DeezerConnect;
@@ -25,8 +22,8 @@ import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.JsonRequestListener;
 import com.deezer.sdk.network.request.event.OAuthException;
 
+import fr.xgouchet.deezer.muzei.data.Preferences;
 import fr.xgouchet.deezer.muzei.util.Constants;
-import fr.xgouchet.deezer.muzei.util.Preferences;
 
 
 public class MediaDataReceiver extends BroadcastReceiver {
@@ -49,7 +46,10 @@ public class MediaDataReceiver extends BroadcastReceiver {
         mConnect = new DeezerConnect(Constants.APP_ID);
         new SessionStore().restore(mConnect, context);
         
-        
+        Bundle extras = intent.getExtras();
+        for (String key : extras.keySet()) {
+            Log.i("Extra", key + " -> " + extras.get(key));
+        }
         
         mTrack = intent.getStringExtra("track");
         mArtist = intent.getStringExtra("artist");
@@ -79,32 +79,7 @@ public class MediaDataReceiver extends BroadcastReceiver {
         
     }
     
-    private void saveMatchingAlbum(final Album album) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        
-        long lastSaved = prefs.getLong(Preferences.PREF_LAST_TRACK_TIME, 0L);
-        
-        // another track was played after
-        if (lastSaved > mTimeStamp) {
-            return;
-        }
-        
-        // Save data
-        Editor editor = prefs.edit();
-        editor.putLong(Preferences.PREF_LAST_TRACK_TIME, mTimeStamp);
-        editor.putLong(Preferences.PREF_LAST_ALBUM_ID, album.getId());
-        
-        editor.apply();
-        
-        
-        if (prefs.getInt(Preferences.PREF_SOURCE, Preferences.SOURCE_EDITO) == Preferences.SOURCE_LAST_PLAYED) {
-            // Request an update
-            Intent intent = new Intent(mContext, ArtSourceService.class);
-            intent.setAction(Constants.ACTION_UPDATE);
-            
-            mContext.startService(intent);
-        }
-    }
+    
     
     private JsonRequestListener mSearchTracksRequestListener = new JsonRequestListener() {
         
@@ -131,7 +106,8 @@ public class MediaDataReceiver extends BroadcastReceiver {
                 }
                 
                 Log.i("Found it ", track.getAlbum().getTitle() + " #" + track.getAlbum().getId());
-                saveMatchingAlbum(track.getAlbum());
+                Preferences.saveLastTrackInfo(mContext, track.getAlbum(), mTimeStamp);
+                
                 found = true;
                 break;
             }

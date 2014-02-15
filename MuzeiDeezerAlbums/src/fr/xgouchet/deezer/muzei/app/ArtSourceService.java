@@ -2,7 +2,6 @@ package fr.xgouchet.deezer.muzei.app;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -12,9 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.deezer.sdk.model.Album;
@@ -29,8 +26,10 @@ import com.deezer.sdk.network.request.event.OAuthException;
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 
+import fr.xgouchet.deezer.muzei.data.Edito;
+import fr.xgouchet.deezer.muzei.data.EditoDao;
+import fr.xgouchet.deezer.muzei.data.Preferences;
 import fr.xgouchet.deezer.muzei.util.Constants;
-import fr.xgouchet.deezer.muzei.util.Preferences;
 
 
 public class ArtSourceService extends RemoteMuzeiArtSource {
@@ -42,21 +41,27 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
     
     private Random mRandom;
     
-    private long mUserId;
-    private List<Long> mEditoIdList;
-    private long mLastPlayedAlbumId;
-    
-    
     private long mCurrentAlbumId;
     
-    private int mCurrentSource;
-    
     private DeezerConnect mConnect;
-    
+    private EditoDao mEditoDao;
     
     public ArtSourceService() {
         super(SOURCE_NAME);
         mRandom = new Random(System.nanoTime());
+    }
+    
+    
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        
+        setUserCommands(BUILTIN_COMMAND_ID_NEXT_ARTWORK);
+        
+        mConnect = new DeezerConnect(Constants.APP_ID);
+        new SessionStore().restore(mConnect, getBaseContext());
+        
+        mEditoDao = new EditoDao(this);
     }
     
     @Override
@@ -78,25 +83,12 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         }
     }
     
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        
-        setUserCommands(BUILTIN_COMMAND_ID_NEXT_ARTWORK);
-        
-        mConnect = new DeezerConnect(Constants.APP_ID);
-        new SessionStore().restore(mConnect, getBaseContext());
-        
-    }
-    
-    
     
     @Override
     protected void onTryUpdate(final int reason)
             throws RetryException {
         
-        refreshPreferences();
-        
+        Preferences.loadPreferences(this);
         
         Artwork current = getCurrentArtwork();
         String token = current == null ? "" : current.getToken();
@@ -108,13 +100,13 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
             mCurrentAlbumId = 0L;
         }
         
-        switch (mCurrentSource) {
+        switch (Preferences.getSourceType()) {
             case Preferences.SOURCE_EDITO:
                 Log.i("Source", "Edito");
                 publishEdito();
                 break;
             case Preferences.SOURCE_FAVS:
-                if (mUserId == 0L) {
+                if (Preferences.getUserId() == 0L) {
                     Log.i("Source", "No User, no Favs -> Edito");
                     publishEdito();
                 } else {
@@ -127,35 +119,11 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
                 publishLastPlayedTrack();
                 break;
             case Preferences.SOURCE_CUSTOM:
-                Log.i("Source", "Custom List");
+                Log.i("Source", "TODO Custom List");
                 // TODO ! 
                 break;
         
         }
-        
-    }
-    
-    private void refreshPreferences() {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-        
-        mUserId = prefs.getLong(Preferences.PREF_USER_ID, 0L);
-//        mEditoId = prefs.getLong(Preferences.PREF_EDITO_ID, 0L);
-        mCurrentSource = prefs.getInt(Preferences.PREF_SOURCE, 0);
-        mLastPlayedAlbumId = prefs.getLong(Preferences.PREF_LAST_ALBUM_ID, 0L);
-        
-        String editosPref = prefs.getString(Preferences.PREF_EDITO_ID_LIST, "0");
-        String[] editos = editosPref.split(";");
-        
-        mEditoIdList = new ArrayList<Long>();
-        for (String edito : editos) {
-            try {
-                long id = Long.valueOf(edito);
-                mEditoIdList.add(id);
-            }
-            catch (NumberFormatException e) {}
-        }
-        
         
     }
     
@@ -165,8 +133,11 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
      */
     private void publishEdito()
             throws RetryException {
+        
+        
         // select a random edito
-        long editoId = mEditoIdList.get(mRandom.nextInt(mEditoIdList.size()));
+        List<Edito> list = mEditoDao.getSelectedEditos();
+        long editoId = list.get(mRandom.nextInt(list.size())).id;
         
         // Get all the albums from the edito
         List<Album> albums;
@@ -188,7 +159,7 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         // Get all the albums from the user
         List<Album> albums;
         try {
-            albums = getAlbumsList(String.format(USER_ALBUMS, mUserId));
+            albums = getAlbumsList(String.format(USER_ALBUMS, Preferences.getUserId()));
         }
         catch (Exception e) {
             throw new RetryException();
@@ -200,15 +171,16 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
     private void publishLastPlayedTrack()
             throws RetryException {
         
+        long albumId = Preferences.getLastTrackAlbumId();
         // ignore if  no album detected 
-        if (mLastPlayedAlbumId == 0L) {
+        if (albumId == 0L) {
             return;
         }
         
         // get last played album info
         Album album;
         try {
-            album = getAlbum(mLastPlayedAlbumId);
+            album = getAlbum(albumId);
         }
         catch (Exception e) {
             throw new RetryException();

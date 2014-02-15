@@ -2,7 +2,6 @@ package fr.xgouchet.deezer.muzei.app;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,10 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -30,27 +26,31 @@ import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.OAuthException;
 import com.deezer.sdk.network.request.event.RequestListener;
 
+import fr.xgouchet.deezer.muzei.data.Edito;
+import fr.xgouchet.deezer.muzei.data.EditoDao;
 import fr.xgouchet.deezer.muzei.util.Constants;
-import fr.xgouchet.deezer.muzei.util.Preferences;
 
 
 public class SelectEditoActivity extends ListActivity {
     
     private DeezerConnect mConnect;
     
+    private EditoDao mEditoDao;
+    
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         requestWindowFeature(Window.FEATURE_PROGRESS);
-//        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         getListView().setOnItemClickListener(mItemSelectedListener);
         
-        
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        
+        mEditoDao = new EditoDao(this);
     }
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -64,11 +64,13 @@ public class SelectEditoActivity extends ListActivity {
     }
     
     
+    /**
+     * Fetch the list of editos from server
+     */
     private void listEditos() {
         
         setProgressBarVisibility(true);
         setProgressBarIndeterminate(true);
-        
         
         
         DeezerRequest editoRequest = new DeezerRequest("editorial");
@@ -86,55 +88,18 @@ public class SelectEditoActivity extends ListActivity {
     }
     
     private void updateSelection() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        
-        // parse the preference list
-        String editosList = prefs.getString(Preferences.PREF_EDITO_ID_LIST, "0");
-        
-        String[] editos = editosList.split(";");
-        List<Long> editosIds = new ArrayList<Long>();
-        
-        for (String edito : editos) {
-            try {
-                long id = Long.valueOf(edito);
-                editosIds.add(id);
-            }
-            catch (NumberFormatException e) {
-                
-            }
-        }
+        // Get the list of Editos 
+        List<Edito> selectedEditos = mEditoDao.getSelectedEditos();
         
         // check all the rows in the list
         int count = getListAdapter().getCount();
         for (int i = 0; i < count; ++i) {
             Edito edito = (Edito) getListAdapter().getItem(i);
-            getListView().setItemChecked(i, (editosIds.contains(edito.id)));
+            getListView().setItemChecked(i, (selectedEditos.contains(edito)));
         }
     }
     
-    private void saveSelection() {
-        Log.i("Select", "Saving Selection :)");
-        
-        StringBuilder builder = new StringBuilder();
-        
-        // check all the rows in the list
-        int count = getListAdapter().getCount();
-        for (int i = 0; i < count; ++i) {
-            if (getListView().isItemChecked(i)) {
-                Edito edito = (Edito) getListAdapter().getItem(i);
-                builder.append(edito.id);
-                builder.append(";");
-            }
-        }
-        
-        // save preference
-        Log.i("Select", builder.toString());
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Editor edit = prefs.edit();
-        edit.putString(Preferences.PREF_EDITO_ID_LIST, builder.toString());
-        edit.apply();
-        
-    }
+    
     
     //////////////////////////////////////////////////////////////////////////////////////
     // List View Item Selection listener
@@ -143,8 +108,15 @@ public class SelectEditoActivity extends ListActivity {
     private OnItemClickListener mItemSelectedListener = new OnItemClickListener() {
         
         @Override
-        public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-            saveSelection();
+        public void onItemClick(final AdapterView<?> parent, final View view, final int position,
+                final long id) {
+            Edito edito = (Edito) getListAdapter().getItem(position);
+            
+            if (getListView().isItemChecked(position)) {
+                mEditoDao.addEdito(edito);
+            } else {
+                mEditoDao.removeEdito(edito);
+            }
         }
     };
     
