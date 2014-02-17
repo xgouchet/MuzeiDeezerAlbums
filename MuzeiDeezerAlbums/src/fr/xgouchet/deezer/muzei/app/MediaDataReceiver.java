@@ -8,7 +8,6 @@ import org.json.JSONException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,7 +32,7 @@ public class MediaDataReceiver extends BroadcastReceiver {
     
     private String mTrack, mArtist, mAlbum;
     
-    private long mTimeStamp;
+    private long mTimeStamp, mTrackId;
     
     private Context mContext;
     
@@ -46,40 +45,41 @@ public class MediaDataReceiver extends BroadcastReceiver {
         mConnect = new DeezerConnect(Constants.APP_ID);
         new SessionStore().restore(mConnect, context);
         
-        Bundle extras = intent.getExtras();
-        for (String key : extras.keySet()) {
-            Log.i("Extra", key + " -> " + extras.get(key));
-        }
-        
+        mTrackId = intent.getLongExtra("id", 0L);
         mTrack = intent.getStringExtra("track");
         mArtist = intent.getStringExtra("artist");
         mAlbum = intent.getStringExtra("album");
         mTimeStamp = System.currentTimeMillis();
         
-        Log.i("Looking for ", "\"" + mTrack + "\" in " + mAlbum + " (by " + mArtist + ")");
-        
-        if (TextUtils.isEmpty(mAlbum)) {
-            Log.w("No Album ?", "No Cover !");
-            return;
+        // Not a Deezer track 
+        if (mTrackId == 0L) {
+            
+            Log.i("Looking for ", "\"" + mTrack + "\" in " + mAlbum + " (by " + mArtist + ")");
+            try {
+                searchMatchingAlbum();
+            }
+            catch (Exception e) {
+                Log.e("Media", "Error ?", e);
+            }
+        } else {
+            Log.i("Deezer Track", "\"" + mTrack + "\" #" + mTrackId);
+            getTrackInfo();
         }
-        
-        try {
-            searchMatchingAlbum();
-        }
-        catch (Exception e) {
-            Log.e("Media", "Error ?", e);
-        }
-        
     }
-    
     private void searchMatchingAlbum()
             throws MalformedURLException, OAuthException, IOException, DeezerError {
         DeezerRequest request = DeezerRequestFactory.requestSearchTracks(mTrack);
         mConnect.requestAsync(request, mSearchTracksRequestListener);
-        
     }
     
+    private void getTrackInfo() {
+        DeezerRequest request = DeezerRequestFactory.requestTrack(mTrackId);
+        mConnect.requestAsync(request, mTrackInfoRequestListener);
+    }
     
+    //////////////////////////////////////////////////////////////////////////////////////
+    // Search track request listener
+    //////////////////////////////////////////////////////////////////////////////////////
     
     private JsonRequestListener mSearchTracksRequestListener = new JsonRequestListener() {
         
@@ -122,30 +122,73 @@ public class MediaDataReceiver extends BroadcastReceiver {
         }
         
         @Override
-        public void onOAuthException(final OAuthException e, final Object arg1) {
+        public void onOAuthException(final OAuthException e, final Object requestId) {
             Log.e("Search", "onOAuthException", e);
         }
         
         @Override
-        public void onMalformedURLException(final MalformedURLException e, final Object arg1) {
+        public void onMalformedURLException(final MalformedURLException e, final Object requestId) {
             Log.e("Search", "onMalformedURLException", e);
         }
         
         @Override
-        public void onIOException(final IOException e, final Object arg1) {
+        public void onIOException(final IOException e, final Object requestId) {
             Log.e("Search", "onIOException", e);
         }
         
         @Override
-        public void onDeezerError(final DeezerError e, final Object arg1) {
+        public void onDeezerError(final DeezerError e, final Object requestId) {
             Log.e("Search", "onDeezerError", e);
         }
         
         @Override
-        public void onJSONParseException(final JSONException e, final Object arg1) {
+        public void onJSONParseException(final JSONException e, final Object requestId) {
             Log.e("Search", "onJSONParseException", e);
         }
     };
     
+    //////////////////////////////////////////////////////////////////////////////////////
+    // Track Info Request
+    //////////////////////////////////////////////////////////////////////////////////////
+    
+    private JsonRequestListener mTrackInfoRequestListener = new JsonRequestListener() {
+        
+        @Override
+        public void onResult(Object result, Object requestId) {
+            if (result instanceof Track) {
+                Track track = (Track) result;
+                
+                Log.i("Found it ", track.getAlbum().getTitle() + " #" + track.getAlbum().getId());
+                Preferences.saveLastTrackInfo(mContext, track.getAlbum(), mTimeStamp);
+            } else {
+                
+            }
+        }
+        
+        @Override
+        public void onOAuthException(final OAuthException e, final Object requestId) {
+            Log.e("Search", "onOAuthException", e);
+        }
+        
+        @Override
+        public void onMalformedURLException(final MalformedURLException e, final Object requestId) {
+            Log.e("Search", "onMalformedURLException", e);
+        }
+        
+        @Override
+        public void onIOException(final IOException e, final Object requestId) {
+            Log.e("Search", "onIOException", e);
+        }
+        
+        @Override
+        public void onDeezerError(final DeezerError e, final Object requestId) {
+            Log.e("Search", "onDeezerError", e);
+        }
+        
+        @Override
+        public void onJSONParseException(final JSONException e, final Object requestId) {
+            Log.e("Search", "onJSONParseException", e);
+        }
+    };
     
 }
