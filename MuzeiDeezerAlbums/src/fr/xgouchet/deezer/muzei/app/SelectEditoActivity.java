@@ -26,7 +26,7 @@ import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.OAuthException;
 import com.deezer.sdk.network.request.event.RequestListener;
 
-import fr.xgouchet.deezer.muzei.data.Edito;
+import fr.xgouchet.deezer.muzei.data.EditoInfo;
 import fr.xgouchet.deezer.muzei.data.EditoDao;
 import fr.xgouchet.deezer.muzei.util.Constants;
 
@@ -89,12 +89,12 @@ public class SelectEditoActivity extends ListActivity {
     
     private void updateSelection() {
         // Get the list of Editos 
-        List<Edito> selectedEditos = mEditoDao.getSelectedEditos();
+        List<EditoInfo> selectedEditos = mEditoDao.getSelectedEditos();
         
         // check all the rows in the list
         int count = getListAdapter().getCount();
         for (int i = 0; i < count; ++i) {
-            Edito edito = (Edito) getListAdapter().getItem(i);
+            EditoInfo edito = (EditoInfo) getListAdapter().getItem(i);
             getListView().setItemChecked(i, (selectedEditos.contains(edito)));
         }
     }
@@ -110,7 +110,7 @@ public class SelectEditoActivity extends ListActivity {
         @Override
         public void onItemClick(final AdapterView<?> parent, final View view, final int position,
                 final long id) {
-            Edito edito = (Edito) getListAdapter().getItem(position);
+            EditoInfo edito = (EditoInfo) getListAdapter().getItem(position);
             
             if (getListView().isItemChecked(position)) {
                 mEditoDao.addEdito(edito);
@@ -132,13 +132,13 @@ public class SelectEditoActivity extends ListActivity {
             hideProgress();
             
             try {
-                final List<Edito> editos = parseResponse(response);
+                final List<EditoInfo> editos = parseResponse(response);
                 
                 runOnUiThread(new Runnable() {
                     
                     @Override
                     public void run() {
-                        setListAdapter(new ArrayAdapter<Edito>(SelectEditoActivity.this,
+                        setListAdapter(new ArrayAdapter<EditoInfo>(SelectEditoActivity.this,
                                 android.R.layout.simple_list_item_multiple_choice, editos));
                         
                         updateSelection();
@@ -176,9 +176,9 @@ public class SelectEditoActivity extends ListActivity {
             Log.e("Select", "onDeezerError", e);
         }
         
-        private List<Edito> parseResponse(final String response)
+        private List<EditoInfo> parseResponse(final String response)
                 throws JSONException {
-            List<Edito> editos = new LinkedList<Edito>();
+            List<EditoInfo> editos = new LinkedList<EditoInfo>();
             
             JSONObject jsonResponse = new JSONObject(response);
             
@@ -193,7 +193,7 @@ public class SelectEditoActivity extends ListActivity {
                 JSONObject jsonEdito = jsonData.getJSONObject(i);
                 
                 if ("editorial".equals(jsonEdito.optString("type"))) {
-                    Edito edito = new Edito();
+                    EditoInfo edito = new EditoInfo();
                     edito.id = jsonEdito.optLong("id");
                     edito.name = jsonEdito.optString("name");
                     editos.add(edito);

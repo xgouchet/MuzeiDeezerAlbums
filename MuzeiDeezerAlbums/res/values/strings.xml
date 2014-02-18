@@ -1,6 +1,7 @@
 <resources>
 
-	<string name="app_name">Deezer Muzei</string>
+	<string name="app_name">Muzei Deezer</string>
+	<string name="search_hint">Search Deezer albums</string>
 
 	<!--  -->
 	<string name="source_album">Deezer</string>
@@ -11,6 +12,7 @@
 	<string name="action_logout">Log Out</string>
 	<string name="action_edit">Edit</string>
 	<string name="action_add_album">Add Album</string>
+	<string name="action_search_album">Search Album</string>
 	<string name="action_schedule">Change interval</string>
 
 	<!--  -->
@@ -24,7 +26,6 @@
 
 	<!--  -->
 	<string name="custom_album_empty">No album selected yet</string>
-	<string name="select_custom_album">Select custom albums</string>
 
 	<!-- Error messages -->
 	<string name="deezer_error_during_login">Deezer error during login</string>

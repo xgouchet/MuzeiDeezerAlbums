@@ -9,7 +9,7 @@ public class Constants {
     
     
     
-    public static final String COVER_SIZE_BIG = "?size=big";
+    public static final String COVER_SIZE = "1000";
     
     public static final String APP_ID = "132411";
     

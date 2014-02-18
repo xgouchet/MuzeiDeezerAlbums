@@ -1,7 +1,7 @@
 package fr.xgouchet.deezer.muzei.data;
 
 
-public class Edito {
+public class EditoInfo {
     
     public long id;
     public String name;
@@ -18,11 +18,11 @@ public class Edito {
             return true;
         }
         
-        if (!(o instanceof Edito)) {
+        if (!(o instanceof EditoInfo)) {
             return false;
         }
         
-        Edito that = (Edito) o;
+        EditoInfo that = (EditoInfo) o;
         
         return this.id == that.id;
     }

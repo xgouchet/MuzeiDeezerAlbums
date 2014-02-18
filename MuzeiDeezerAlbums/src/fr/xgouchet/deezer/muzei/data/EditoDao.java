@@ -18,10 +18,41 @@ public final class EditoDao {
         mDatabase = new Database(context);
     }
     
-    
-    public synchronized List<Edito> getSelectedEditos() {
+    /**
+     * @return a random edito or null
+     */
+    public synchronized EditoInfo getRandomEdito() {
         
-        List<Edito> editos = new ArrayList<Edito>();
+        SQLiteDatabase db = mDatabase.getReadableDatabase();
+        
+        // query the DB 
+        Cursor cursor = db.query(Database.Tables.EDITOS, null, null, null, null, null, "RANDOM()",
+                "1");
+        if (cursor == null) {
+            return null;
+        }
+        
+        if (cursor.moveToFirst()) {
+            // get the columns indices
+            int idxId = cursor.getColumnIndex(Database.Editos.ID);
+            int idxName = cursor.getColumnIndex(Database.Editos.NAME);
+            
+            // get the edito info
+            EditoInfo edito = new EditoInfo();
+            edito.id = cursor.getLong(idxId);
+            edito.name = cursor.getString(idxName);
+            return edito;
+        } else {
+            return null;
+        }
+        
+    }
+    
+    
+    
+    public synchronized List<EditoInfo> getSelectedEditos() {
+        
+        List<EditoInfo> editos = new ArrayList<EditoInfo>();
         SQLiteDatabase db = mDatabase.getReadableDatabase();
         
         
@@ -38,7 +69,7 @@ public final class EditoDao {
         
         // fill the list
         while (cursor.moveToNext()) {
-            Edito edito = new Edito();
+            EditoInfo edito = new EditoInfo();
             edito.id = cursor.getLong(idxId);
             edito.name = cursor.getString(idxName);
             editos.add(edito);
@@ -49,7 +80,7 @@ public final class EditoDao {
     }
     
     
-    public synchronized void addEdito(Edito edito) {
+    public synchronized void addEdito(EditoInfo edito) {
         
         SQLiteDatabase db = mDatabase.getWritableDatabase();
         
@@ -68,7 +99,7 @@ public final class EditoDao {
     }
     
     
-    public synchronized void removeEdito(Edito edito) {
+    public synchronized void removeEdito(EditoInfo edito) {
         
         String where = Database.Editos.ID + "=?";
         String[] args = new String[] {

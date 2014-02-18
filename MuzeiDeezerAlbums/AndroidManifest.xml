@@ -56,6 +56,11 @@
 			android:exported="true"
 			android:label="@string/custom_albums" >
 		</activity>
+		<activity
+			android:name="fr.xgouchet.deezer.muzei.app.SearchAlbumActivity"
+			android:exported="true"
+			android:label="@string/custom_albums" >
+		</activity>
 
 		<!-- Media metadata receiver -->
 		<receiver

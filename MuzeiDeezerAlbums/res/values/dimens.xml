@@ -5,6 +5,7 @@
 	<dimen name="text_padding">8dp</dimen>
 	<dimen name="listview_padding">24dp</dimen>
 	<dimen name="big_image_size">96dp</dimen>
+	<dimen name="huge_image_size">128dp</dimen>
 	<dimen name="medium_image_size">80dp</dimen>
 	<dimen name="small_image_size">64dp</dimen>
 	<dimen name="margin_button">16dp</dimen>

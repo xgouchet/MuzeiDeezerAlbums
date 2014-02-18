@@ -3,13 +3,28 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:gravity="center_horizontal"
 	android:padding="@dimen/activity_padding"
 	tools:context=".app.SelectCustomActivity" >
+
+	<EditText
+		android:id="@+id/search_input"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentTop="true"
+		android:drawableRight="@drawable/ic_action_search"
+		android:ems="10"
+		android:hint="@string/search_hint"
+		android:maxLines="1"
+		android:singleLine="true" />
 
 	<GridView
 		android:id="@android:id/list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:layout_below="@+id/search_input"
 		android:clipToPadding="false"
 		android:drawSelectorOnTop="true"
 		android:numColumns="auto_fit"
@@ -40,15 +55,5 @@
 			android:textSize="22sp"
 			android:textStyle="italic" />
 	</RelativeLayout>
-
-	<ImageButton
-		android:id="@+id/add_new_album"
-		android:layout_width="@dimen/small_image_size"
-		android:layout_height="@dimen/small_image_size"
-		android:layout_alignParentBottom="true"
-		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="@dimen/margin_button"
-		android:background="@drawable/white_circle_button"
-		android:src="@drawable/ic_add_photos" />
 
 </RelativeLayout>

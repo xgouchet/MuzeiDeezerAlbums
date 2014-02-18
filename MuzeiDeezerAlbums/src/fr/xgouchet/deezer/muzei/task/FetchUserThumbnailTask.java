@@ -13,19 +13,12 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.deezer.sdk.model.User;
 
-import fr.xgouchet.deezer.muzei.util.Constants;
+import fr.xgouchet.deezer.muzei.util.BitmapUtils;
 
 
 /**
@@ -89,7 +82,7 @@ public class FetchUserThumbnailTask extends AsyncTask<User, User, Void> {
                 return null;
             }
             
-            String pictureUrl = user.getPictureUrl() + Constants.COVER_SIZE_BIG;
+            String pictureUrl = user.getPictureUrl() + "?size=256";
             
             Log.d(LOG_TAG, "Getting " + pictureUrl);
             if ((pictureUrl == null) || (pictureUrl.length() == 0)) {
@@ -192,32 +185,6 @@ public class FetchUserThumbnailTask extends AsyncTask<User, User, Void> {
     private Bitmap loadBitmapFromFile(final File file) {
         
         Bitmap source = BitmapFactory.decodeFile(file.getAbsolutePath());
-        if (source == null) {
-            return null;
-        }
-        
-        // Create custom bitmap
-        Bitmap output = Bitmap.createBitmap(source.getWidth(), source.getHeight(),
-                Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-        
-        // Compute sizes
-        final int color = Color.RED;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, source.getWidth(), source.getHeight());
-        final RectF rectF = new RectF(rect);
-        
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawOval(rectF, paint);
-        
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(source, rect, rect, paint);
-        
-        source.recycle();
-        
-        
-        return output;
+        return BitmapUtils.circleBitmap(source, true);
     }
 }

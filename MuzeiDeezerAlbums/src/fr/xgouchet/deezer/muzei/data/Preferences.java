@@ -1,6 +1,5 @@
 package fr.xgouchet.deezer.muzei.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -28,7 +27,6 @@ public class Preferences {
     // The prefs keys
     //////////////////////////////////////////////////////////////////////////////////////
     private static final String PREF_USER_ID = "deezer_user_id";
-    private static final String PREF_EDITO_ID_LIST = "deezer_edito_id_list";
     private static final String PREF_SOURCE = "deezer_source";
     private static final String PREF_LAST_TRACK_TIME = "deezer_last_timestamp";
     private static final String PREF_LAST_ALBUM_ID = "deezer_last_album_id";
@@ -97,13 +95,6 @@ public class Preferences {
         sLastTrackTilestamp = prefs.getLong(PREF_LAST_TRACK_TIME, 0L);
         sSourceType = prefs.getInt(PREF_SOURCE, SOURCE_EDITO);
         
-        
-        sEditoIdList = new ArrayList<Long>() {
-            
-            {
-                add(0L);
-            }
-        };
     }
     /**
      * Saves the current user id

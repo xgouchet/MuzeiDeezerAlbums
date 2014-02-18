@@ -6,6 +6,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 
+/**
+ * 
+ * @author Xavier Gouchet
+ * 
+ */
 public class Database extends SQLiteOpenHelper {
     
     private static final String DATABASE_NAME = "gallery_source.db";
@@ -28,12 +33,13 @@ public class Database extends SQLiteOpenHelper {
         String ID = "album_id";
         String TITLE = "album_title";
         String ARTIST = "album_artist";
+        String COVER = "album_cover";
     }
     
-    /** Android Log Tag */
-    private static final String LOG_TAG = "DatabaseHelper";
     
-    
+    /**
+     * @param context
+     */
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -51,6 +57,7 @@ public class Database extends SQLiteOpenHelper {
                 + Albums.ID + " INTEGER NOT NULL,"
                 + Albums.TITLE + " TEXT,"
                 + Albums.ARTIST + " TEXT,"
+                + Albums.COVER + " TEXT,"
                 + "UNIQUE (" + Albums.ID + ") ON CONFLICT REPLACE)");
     }
     

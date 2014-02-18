@@ -26,8 +26,10 @@ import com.deezer.sdk.network.request.event.OAuthException;
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 
-import fr.xgouchet.deezer.muzei.data.Edito;
+import fr.xgouchet.deezer.muzei.data.AlbumDao;
+import fr.xgouchet.deezer.muzei.data.AlbumInfo;
 import fr.xgouchet.deezer.muzei.data.EditoDao;
+import fr.xgouchet.deezer.muzei.data.EditoInfo;
 import fr.xgouchet.deezer.muzei.data.Preferences;
 import fr.xgouchet.deezer.muzei.util.Constants;
 
@@ -45,6 +47,7 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
     
     private DeezerConnect mConnect;
     private EditoDao mEditoDao;
+    private AlbumDao mAlbumDao;
     
     public ArtSourceService() {
         super(SOURCE_NAME);
@@ -62,6 +65,7 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         new SessionStore().restore(mConnect, getBaseContext());
         
         mEditoDao = new EditoDao(this);
+        mAlbumDao = new AlbumDao(this);
     }
     
     @Override
@@ -119,8 +123,8 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
                 publishLastPlayedTrack();
                 break;
             case Preferences.SOURCE_CUSTOM:
-                Log.i("Source", "TODO Custom List");
-                // TODO ! 
+                Log.i("Source", "Custom List");
+                publishCustomAlbum();
                 break;
         
         }
@@ -136,8 +140,14 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         
         
         // select a random edito
-        List<Edito> list = mEditoDao.getSelectedEditos();
-        long editoId = list.get(mRandom.nextInt(list.size())).id;
+        EditoInfo editoInfo = mEditoDao.getRandomEdito();
+        long editoId;
+        
+        if (editoInfo == null) {
+            editoId = 0;
+        } else {
+            editoId = editoInfo.id;
+        }
         
         // Get all the albums from the edito
         List<Album> albums;
@@ -150,6 +160,27 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         
         publishRandomAlbum(albums);
     }
+    
+    private void publishCustomAlbum()
+            throws RetryException {
+        
+        // select a random album
+        AlbumInfo albumInfo = mAlbumDao.getRandomAlbum();
+        if (albumInfo == null) {
+            return;
+        }
+        
+        Album album;
+        try {
+            album = getAlbum(albumInfo.id);
+        }
+        catch (Exception e) {
+            throw new RetryException();
+        }
+        
+        publishAlbum(album);
+    }
+    
     /**
      * 
      * @throws RetryException
@@ -217,7 +248,7 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         Artwork.Builder builder = new Artwork.Builder();
         builder.title(album.getTitle());
         builder.byline(album.getArtist().getName());
-        builder.imageUri(Uri.parse(album.getCoverUrl() + Constants.COVER_SIZE_BIG));
+        builder.imageUri(Uri.parse(album.getCoverUrl() + "?size=" + Constants.COVER_SIZE));
         builder.token(Long.toString(album.getId()));
         
         if (album.getLink() != null) {
