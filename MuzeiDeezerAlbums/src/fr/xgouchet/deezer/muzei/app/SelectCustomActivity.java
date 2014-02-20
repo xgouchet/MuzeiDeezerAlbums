@@ -2,6 +2,7 @@ package fr.xgouchet.deezer.muzei.app;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -64,8 +66,7 @@ public class SelectCustomActivity extends Activity {
         // setup gridview 
         mGridView = (GridView) findViewById(android.R.id.list);
         mGridView.setEmptyView(findViewById(android.R.id.empty));
-//        mGridView.setOnItemLongClickListener(mAlbumLongClickListener); // TODO
-        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         mGridView.setMultiChoiceModeListener(mAlbumSelectionListener);
         
         // setup add album button
@@ -105,34 +106,68 @@ public class SelectCustomActivity extends Activity {
     //////////////////////////////////////////////////////////////////////////////////////
     private MultiChoiceModeListener mAlbumSelectionListener = new MultiChoiceModeListener() {
         
+        private final List<AlbumInfo> mAlbums = new ArrayList<AlbumInfo>();
+        
+        private ActionMode mActionMode;
+        
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // TODO Auto-generated method stub
+            Log.i("ActionMode", "onPrepareActionMode");
+            
+            mAlbums.clear();
             return false;
         }
         
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            // TODO Auto-generated method stub
+            Log.i("ActionMode", "onDestroyActionMode");
             
         }
         
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // TODO Auto-generated method stub
-            return false;
+            Log.i("ActionMode", "onCreateActionMode");
+            getMenuInflater().inflate(R.menu.custom_action, menu);
+            mActionMode = mode;
+            return true;
         }
         
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // TODO Auto-generated method stub
+            Log.i("ActionMode", "onActionItemClicked");
+            if (item.getItemId() == R.id.action_delete) {
+                deleteSelectedAlbums();
+                mActionMode.finish();
+                return true;
+            }
+            
+            
             return false;
         }
         
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                 boolean checked) {
-            // TODO Auto-generated method stub
+            Log.i("ActionMode", "onItemCheckedStateChanged");
+            
+            AlbumInfo info = mAlbumAdapter.getItem(position);
+            if (checked) {
+                mAlbums.add(info);
+            } else {
+                mAlbums.remove(info);
+            }
+            
+            mActionMode.setTitle(Integer.toString(mAlbums.size()));
+        }
+        
+        private void deleteSelectedAlbums() {
+            for (AlbumInfo info : mAlbums) {
+                mAlbumDao.removeAlbum(info);
+                mAlbumAdapter.remove(info);
+            }
+            
+            
+            mAlbumAdapter.notifyDataSetChanged();
             
         }
     };
