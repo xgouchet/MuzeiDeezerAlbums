@@ -26,8 +26,8 @@ import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.OAuthException;
 import com.deezer.sdk.network.request.event.RequestListener;
 
-import fr.xgouchet.deezer.muzei.data.EditoInfo;
 import fr.xgouchet.deezer.muzei.data.EditoDao;
+import fr.xgouchet.deezer.muzei.data.EditoInfo;
 import fr.xgouchet.deezer.muzei.util.Constants;
 
 

@@ -15,7 +15,25 @@
 		android:id="@+id/action_schedule"
 		android:icon="@drawable/ic_action_schedule"
 		android:showAsAction="always"
-		android:title="@string/action_schedule"/>
+		android:title="@string/action_schedule">
+		<menu>
+			<item
+				android:id="@+id/schedule_1_hour"
+				android:title="@string/schedule_1_hour"/>
+			<item
+				android:id="@+id/schedule_3_hour"
+				android:title="@string/schedule_3_hour"/>
+			<item
+				android:id="@+id/schedule_6_hour"
+				android:title="@string/schedule_6_hour"/>
+			<item
+				android:id="@+id/schedule_12_hour"
+				android:title="@string/schedule_12_hour"/>
+			<item
+				android:id="@+id/schedule_24_hour"
+				android:title="@string/schedule_24_hour"/>
+		</menu>
+	</item>
 	<item
 		android:id="@+id/action_logout"
 		android:showAsAction="never"

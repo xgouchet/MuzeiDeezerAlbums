@@ -1,7 +1,5 @@
 package fr.xgouchet.deezer.muzei.data;
 
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +28,7 @@ public class Preferences {
     private static final String PREF_SOURCE = "deezer_source";
     private static final String PREF_LAST_TRACK_TIME = "deezer_last_timestamp";
     private static final String PREF_LAST_ALBUM_ID = "deezer_last_album_id";
+    private static final String PREF_SCHEDULE = "deezer_schedule_hour_delay";
     
     //////////////////////////////////////////////////////////////////////////////////////
     // The different values possible for source
@@ -45,12 +44,10 @@ public class Preferences {
     //////////////////////////////////////////////////////////////////////////////////////
     
     private static long sUserId;
-    @Deprecated
-    private static List<Long> sEditoIdList;
     private static int sSourceType;
     private static long sLastTrackTilestamp;
     private static long sLastTrackAlbumId;
-    
+    private static int sScheduleHourDelay;
     
     public static long getUserId() {
         return sUserId;
@@ -72,9 +69,9 @@ public class Preferences {
     }
     
     
-    @Deprecated
-    public static List<Long> getEditoIdList() {
-        return sEditoIdList;
+    
+    public static int getScheduleHourDelay() {
+        return sScheduleHourDelay;
     }
     
     
@@ -87,13 +84,14 @@ public class Preferences {
      * 
      * @param context
      */
-    public static void loadPreferences(Context context) {
+    public static void loadPreferences(final Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         
         sUserId = prefs.getLong(PREF_USER_ID, 0L);
         sLastTrackAlbumId = prefs.getLong(PREF_LAST_ALBUM_ID, 0L);
         sLastTrackTilestamp = prefs.getLong(PREF_LAST_TRACK_TIME, 0L);
         sSourceType = prefs.getInt(PREF_SOURCE, SOURCE_EDITO);
+        sScheduleHourDelay = prefs.getInt(PREF_SCHEDULE, 6);
         
     }
     /**
@@ -102,7 +100,7 @@ public class Preferences {
      * @param context
      * @param user
      */
-    public static void saveCurrentUser(Context context, User user) {
+    public static void saveCurrentUser(final Context context, final User user) {
         // Save the user id
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putLong(PREF_USER_ID, user.getId());
@@ -112,7 +110,7 @@ public class Preferences {
     }
     
     
-    public static void saveSourceType(Context context, int source) {
+    public static void saveSourceType(final Context context, final int source) {
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putInt(PREF_SOURCE, source);
         editor.apply();
@@ -128,7 +126,8 @@ public class Preferences {
      * @param album
      * @param timestamp
      */
-    public static void saveLastTrackInfo(final Context context, final Album album, long timestamp) {
+    public static void saveLastTrackInfo(final Context context, final Album album,
+            final long timestamp) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         
         long lastSaved = prefs.getLong(Preferences.PREF_LAST_TRACK_TIME, 0L);
@@ -153,7 +152,13 @@ public class Preferences {
             intent.setAction(Constants.ACTION_UPDATE);
             context.startService(intent);
         }
+    }
+    
+    public static void saveScheduleHourDelay(final Context context, final int delay) {
+        Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putInt(PREF_SCHEDULE, delay);
+        editor.apply();
         
-        
+        sScheduleHourDelay = delay;
     }
 }

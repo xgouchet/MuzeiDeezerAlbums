@@ -129,6 +129,9 @@ public class ArtSourceService extends RemoteMuzeiArtSource {
         
         }
         
+       // schedule next update 
+        long delay = 1000L * 60L * 60L * Preferences.getScheduleHourDelay();  
+        scheduleUpdate(System.currentTimeMillis() + delay); 
     }
     
     /**

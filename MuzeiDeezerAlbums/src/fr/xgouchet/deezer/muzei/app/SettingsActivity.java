@@ -143,6 +143,24 @@ public class SettingsActivity extends Activity {
                 break;
         }
         
+        switch (Preferences.getScheduleHourDelay()) {
+            case 1:
+                menu.findItem(R.id.schedule_1_hour).setEnabled(false);
+                break;
+            case 3:
+                menu.findItem(R.id.schedule_3_hour).setEnabled(false);
+                break;
+            case 6:
+                menu.findItem(R.id.schedule_6_hour).setEnabled(false);
+                break;
+            case 12:
+                menu.findItem(R.id.schedule_12_hour).setEnabled(false);
+                break;
+            case 24:
+                menu.findItem(R.id.schedule_24_hour).setEnabled(false);
+                break;
+        }
+        
         return true;
     }
     
@@ -162,6 +180,21 @@ public class SettingsActivity extends Activity {
                 editSourceOptions();
                 break;
             case R.id.action_schedule:
+                break;
+            case R.id.schedule_1_hour:
+                Preferences.saveScheduleHourDelay(this, 1);
+                break;
+            case R.id.schedule_3_hour:
+                Preferences.saveScheduleHourDelay(this, 3);
+                break;
+            case R.id.schedule_6_hour:
+                Preferences.saveScheduleHourDelay(this, 6);
+                break;
+            case R.id.schedule_12_hour:
+                Preferences.saveScheduleHourDelay(this, 12);
+                break;
+            case R.id.schedule_24_hour:
+                Preferences.saveScheduleHourDelay(this, 24);
                 break;
             default:
                 res = super.onOptionsItemSelected(item);

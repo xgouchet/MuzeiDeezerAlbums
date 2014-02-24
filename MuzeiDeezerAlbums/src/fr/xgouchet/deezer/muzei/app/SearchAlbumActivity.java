@@ -1,7 +1,6 @@
 package fr.xgouchet.deezer.muzei.app;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collections;
@@ -11,8 +10,6 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -42,8 +39,6 @@ import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.JsonRequestListener;
 import com.deezer.sdk.network.request.event.OAuthException;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Picasso.LoadedFrom;
-import com.squareup.picasso.Target;
 
 import fr.xgouchet.deezer.muzei.R;
 import fr.xgouchet.deezer.muzei.data.AlbumDao;
@@ -55,12 +50,14 @@ public class SearchAlbumActivity extends Activity {
     
     private DeezerConnect mConnect;
     private EditText mSearchInput;
+    private TextView mEmptyText;
     private AlbumDao mAlbumDao;
     private AdapterView<ListAdapter> mGridView;
     private AlbumAdapter mAdapter;
     
+    
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -80,6 +77,10 @@ public class SearchAlbumActivity extends Activity {
         mSearchInput.setImeActionLabel(getString(android.R.string.search_go),
                 EditorInfo.IME_ACTION_SEARCH);
         mSearchInput.setOnEditorActionListener(mEditorListener);
+        
+        // For now, let's make it empty 
+        mEmptyText = (TextView) findViewById(R.id.text_empty);
+        mEmptyText.setText("");
     }
     
     @Override
@@ -91,23 +92,22 @@ public class SearchAlbumActivity extends Activity {
     }
     
     
-    private void search(String query, boolean force) {
+    private void search(final String query) {
         
         // progress
         setProgressBarVisibility(true);
         setProgressBarIndeterminate(true);
+        mEmptyText.setText(R.string.loading);
         
         
         // Launch the request 
         DeezerRequest request = DeezerRequestFactory.requestSearchAlbums(query);
-        request.setId(Long.valueOf(force ? Long.MAX_VALUE : System.nanoTime()));
         mConnect.requestAsync(request, mSearchAlbumListener);
         
         // 
-        if (force) {
-            List<Album> empty = Collections.emptyList();
-            mGridView.setAdapter(new AlbumAdapter(this, empty));
-        }
+        List<Album> empty = Collections.emptyList();
+        mGridView.setAdapter(new AlbumAdapter(this, empty));
+        
         
     }
     
@@ -128,7 +128,8 @@ public class SearchAlbumActivity extends Activity {
     private OnItemClickListener mAlbumSelectListener = new OnItemClickListener() {
         
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(final AdapterView<?> parent, final View view, final int position,
+                final long id) {
             Album album = mAdapter.getItem(position);
             
             AlbumInfo albumInfo = new AlbumInfo();
@@ -138,6 +139,8 @@ public class SearchAlbumActivity extends Activity {
             albumInfo.cover = album.getCoverUrl();
             
             mAlbumDao.addAlbum(albumInfo);
+            
+            
             
             finish();
         }
@@ -151,18 +154,18 @@ public class SearchAlbumActivity extends Activity {
     private OnEditorActionListener mEditorListener = new OnEditorActionListener() {
         
         @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
             Log.d("Editor Action", "Action " + actionId + " / Key Event " + event);
             
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 String query = mSearchInput.getText().toString();
                 Log.i("Search", "q=" + query);
                 
-                // TODO hide the keyboard ! 
+                // hide the keyboard ! 
                 InputMethodManager im = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 im.hideSoftInputFromWindow(mSearchInput.getWindowToken(), 0);
                 
-                search(query, true);
+                search(query);
                 return true;
             }
             
@@ -174,26 +177,17 @@ public class SearchAlbumActivity extends Activity {
     // Search Request Listener
     //////////////////////////////////////////////////////////////////////////////////////
     
-    private long mLastRequestTimestamp;
     
     private JsonRequestListener mSearchAlbumListener = new JsonRequestListener() {
         
         @SuppressWarnings("unchecked")
         @Override
-        public void onResult(Object result, Object requestId) {
+        public void onResult(final Object result, final Object requestId) {
             
             hideProgress();
             
             final PaginatedList<Album> albums = (PaginatedList<Album>) result;
             Log.i("Search Result", "Result : " + albums.size() + " albums found");
-            
-            Long requestTimestamp = (Long) requestId;
-            
-            if (requestTimestamp < mLastRequestTimestamp) {
-                return;
-            }
-            
-            mLastRequestTimestamp = requestTimestamp;
             
             runOnUiThread(new Runnable() {
                 
@@ -201,6 +195,10 @@ public class SearchAlbumActivity extends Activity {
                 public void run() {
                     mAdapter = new AlbumAdapter(SearchAlbumActivity.this, albums);
                     mGridView.setAdapter(mAdapter);
+                    
+                    if (albums.size() == 0) {
+                        mEmptyText.setText(R.string.custom_album_no_result);
+                    }
                 }
             });
             
@@ -231,7 +229,8 @@ public class SearchAlbumActivity extends Activity {
             Log.e("Search", "onDeezerError", e);
         }
         
-        public void onJSONParseException(JSONException e, Object requestId) {
+        @Override
+        public void onJSONParseException(final JSONException e, final Object requestId) {
             hideProgress();
             Log.e("Search", "onJSONParseException", e);
         }
@@ -245,13 +244,13 @@ public class SearchAlbumActivity extends Activity {
         
         private final LayoutInflater mLayoutInflater;
         
-        public AlbumAdapter(Context context, List<Album> list) {
+        public AlbumAdapter(final Context context, final List<Album> list) {
             super(context, R.layout.item_album, list);
             mLayoutInflater = LayoutInflater.from(context);
         }
         
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             AlbumViewHolder holder;
             View view = convertView;
             
@@ -268,7 +267,6 @@ public class SearchAlbumActivity extends Activity {
             }
             
             Album album = getItem(position);
-            holder.albumId = album.getId();
             holder.title.setText(album.getTitle());
             holder.cover.setImageResource(R.drawable.album_default);
             
@@ -283,7 +281,7 @@ public class SearchAlbumActivity extends Activity {
             } else {
                 Picasso.with(getContext()).load(album.getCoverUrl())
                         .placeholder(R.drawable.album_default)
-                        .into(new AlbumTarget(album, holder, cacheFile));
+                        .into(holder.cover);
             }
             
             return view;
@@ -298,63 +296,8 @@ public class SearchAlbumActivity extends Activity {
         
         public TextView title;
         public ImageView cover;
-        public long albumId;
     }
     
-    //////////////////////////////////////////////////////////////////////////////////////
-    // Album Target (for Picasso)
-    //////////////////////////////////////////////////////////////////////////////////////
     
-    private class AlbumTarget implements Target {
-        
-        private final Album mAlbum;
-        private final AlbumViewHolder mHolder;
-        private final File mFile;
-        
-        public AlbumTarget(Album info, AlbumViewHolder holder, File file) {
-            mAlbum = info;
-            mHolder = holder;
-            mFile = file;
-        }
-        
-        
-        @Override
-        public void onPrepareLoad(Drawable arg0) {
-            
-        }
-        
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, LoadedFrom from) {
-            
-            if (mHolder.albumId == mAlbum.getId()) {
-                mHolder.cover.setImageBitmap(bitmap);
-            }
-            
-            FileOutputStream output = null;
-            
-            try {
-                output = new FileOutputStream(mFile);
-                
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-                output.flush();
-            }
-            catch (Exception e) {
-                mFile.delete();
-            }
-            finally {
-                try {
-                    output.close();
-                }
-                catch (Exception e) {
-                    // 
-                }
-            }
-        }
-        
-        @Override
-        public void onBitmapFailed(Drawable drawable) {
-            Picasso.with(SearchAlbumActivity.this).load(mAlbum.getCoverUrl()).into(this);
-        }
-    }
     
 }

@@ -1,23 +1,23 @@
 <resources>
 
 	<string name="app_name">Muzei Deezer</string>
-	<string name="search_hint">Search Deezer albums</string>
+	<string name="search_hint">Chercher un album sur Deezer</string>
 
 	<!--  -->
 	<string name="source_album">Deezer</string>
-	<string name="source_album_desc">Covers from Deezer Albums</string>
+	<string name="source_album_desc">"Pochettes d'albums Deezer"</string>
 
 	<!--  -->
-	<string name="action_login">Log In</string>
-	<string name="action_logout">Log Out</string>
-	<string name="action_edit">Edit</string>
-	<string name="action_add_album">Add Album</string>
-	<string name="action_search_album">Search Album</string>
-	<string name="action_schedule">Wallpaper update frequency</string>
-	<string name="action_delete">Delete</string>
+	<string name="action_login">Connexion</string>
+	<string name="action_logout">Déconnexion</string>
+	<string name="action_edit">Modifier</string>
+	<string name="action_add_album">Ajouter un Album</string>
+	<string name="action_search_album">Chercher un Album</string>
+	<string name="action_schedule">"Fréquence de mise à jour"</string>
+	<string name="action_delete">Supprimer</string>
 
 	<!--  -->
-	<string name="loading">Loading &#8230; </string>
+	<string name="loading">Chargement &#8230; </string>
 	<string name="anonymous">Anonymous</string>
 	<string name="user_avatar">User Avatar</string>
 	<string name="favorite_albums">My favorite albums</string>
@@ -27,14 +27,6 @@
 
 	<!--  -->
 	<string name="custom_album_empty">No album selected yet</string>
-	<string name="custom_album_no_result">No album matching this query</string>
-
-	<!--  -->
-	<string name="schedule_1_hour">Every hour</string>
-	<string name="schedule_3_hour">Every 3 hours</string>
-	<string name="schedule_6_hour">Four times a day</string>
-	<string name="schedule_12_hour">Twice a day</string>
-	<string name="schedule_24_hour">Once a day</string>
 
 	<!-- Error messages -->
 	<string name="deezer_error_during_login">Deezer error during login</string>
