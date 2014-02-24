@@ -11,34 +11,37 @@
 	<string name="action_login">Connexion</string>
 	<string name="action_logout">Déconnexion</string>
 	<string name="action_edit">Modifier</string>
-	<string name="action_add_album">Ajouter un Album</string>
-	<string name="action_search_album">Chercher un Album</string>
 	<string name="action_schedule">"Fréquence de mise à jour"</string>
 	<string name="action_delete">Supprimer</string>
 
 	<!--  -->
 	<string name="loading">Chargement &#8230; </string>
-	<string name="anonymous">Anonymous</string>
-	<string name="user_avatar">User Avatar</string>
-	<string name="favorite_albums">My favorite albums</string>
-	<string name="playing_albums">Last played track</string>
-	<string name="edito_albums">Editorial albums</string>
-	<string name="custom_albums">Custom albums</string>
+	<string name="anonymous">Anonyme</string>
+	<string name="user_avatar">Avatar utilisateur</string>
+	<string name="favorite_albums">Mes albums favoris</string>
+	<string name="playing_albums">Dernière piste écoutée</string>
+	<string name="edito_albums">"Albums de l'Edito"</string>
+	<string name="custom_albums">Albums selectionnés</string>
 
 	<!--  -->
-	<string name="custom_album_empty">No album selected yet</string>
+	<string name="custom_album_empty">"Pas d'album selectionné"</string>
+	<string name="custom_album_no_result">Aucun album correspondant à cette recherche</string>
+
+	<!--  -->
+	<string name="schedule_1_hour">Toutes les heures</string>
+	<string name="schedule_3_hour">Toutes les 6 heures</string>
+	<string name="schedule_6_hour">Quatre fois par jour</string>
+	<string name="schedule_12_hour">Deux fois par jour</string>
+	<string name="schedule_24_hour">Une fois par jour</string>
 
 	<!-- Error messages -->
-	<string name="deezer_error_during_login">Deezer error during login</string>
-	<string name="deezer_too_many_skips">You have skipped too many tracks in this radio. Skip will be disabled for a while</string>
+	<string name="deezer_error_during_login">"Erreur lors de l'authentification"</string>
 	<string name="invalid_credentials">Invalid credentials</string>
-	<string name="login_cancelled">Login cancelled</string>
-	<string name="ui_custom_track_list">This activity plays a custom list of tracks, which is not a radio, a playlist or an album</string>
 
 	<!--  -->
-	<string name="desc_edito">"Display covers of albums in the week's selection. You can edit the genre of music for the selection. "</string>
-	<string name="desc_favorites">"Display covers of albums you have added to favorites on your Deezer account."</string>
-	<string name="desc_last_played">"Display the cover of the album of the last track you played. It works in most tracks played with Deezer, and may even recognise tracks from other players."</string>
-	<string name="desc_custom">"Display the covers of albums you pick by hand. "</string>
+	<string name="desc_edito">"Affiche les pochettes des albums dans la selection éditoriale hébdomadaire. Vous pouvez modifier le genre musical de cette selection "</string>
+	<string name="desc_favorites">"Affiche les pochettes des albums que vous avez ajoutés à vos favoris.  "</string>
+	<string name="desc_last_played">"Affiche la pochette de l'album de la dernière piste que vous avez écouté sur cet appareil."</string>
+	<string name="desc_custom">"Affiche les pochettes d'albums que vous avez choisis vous même.  "</string>
 
 </resources>
