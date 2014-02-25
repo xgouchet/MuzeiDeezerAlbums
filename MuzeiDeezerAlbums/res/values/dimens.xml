@@ -3,7 +3,6 @@
 
 	<dimen name="activity_padding">16dp</dimen>
 	<dimen name="text_padding">8dp</dimen>
-	<dimen name="listview_padding">24dp</dimen>
 	<dimen name="big_image_size">96dp</dimen>
 	<dimen name="huge_image_size">128dp</dimen>
 	<dimen name="medium_image_size">80dp</dimen>

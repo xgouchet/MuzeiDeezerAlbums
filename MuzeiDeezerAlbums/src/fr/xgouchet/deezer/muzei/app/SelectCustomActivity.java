@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
@@ -53,7 +54,7 @@ public class SelectCustomActivity extends Activity {
     
     
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -66,7 +67,7 @@ public class SelectCustomActivity extends Activity {
         // setup gridview 
         mGridView = (GridView) findViewById(android.R.id.list);
         mGridView.setEmptyView(findViewById(android.R.id.empty));
-        mGridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        mGridView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
         mGridView.setMultiChoiceModeListener(mAlbumSelectionListener);
         
         // setup add album button
@@ -88,6 +89,7 @@ public class SelectCustomActivity extends Activity {
         
     }
     
+    
     //////////////////////////////////////////////////////////////////////////////////////
     // Add Album Button listener
     //////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +97,7 @@ public class SelectCustomActivity extends Activity {
     private OnClickListener mAddAlbumClickListener = new OnClickListener() {
         
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             Intent intent = new Intent(SelectCustomActivity.this, SearchAlbumActivity.class);
             startActivity(intent);
         }
@@ -111,7 +113,7 @@ public class SelectCustomActivity extends Activity {
         private ActionMode mActionMode;
         
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        public boolean onPrepareActionMode(final ActionMode mode, final Menu menu) {
             Log.i("ActionMode", "onPrepareActionMode");
             
             mAlbums.clear();
@@ -119,13 +121,13 @@ public class SelectCustomActivity extends Activity {
         }
         
         @Override
-        public void onDestroyActionMode(ActionMode mode) {
+        public void onDestroyActionMode(final ActionMode mode) {
             Log.i("ActionMode", "onDestroyActionMode");
             
         }
         
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        public boolean onCreateActionMode(final ActionMode mode, final Menu menu) {
             Log.i("ActionMode", "onCreateActionMode");
             getMenuInflater().inflate(R.menu.custom_action, menu);
             mActionMode = mode;
@@ -133,7 +135,7 @@ public class SelectCustomActivity extends Activity {
         }
         
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
             Log.i("ActionMode", "onActionItemClicked");
             if (item.getItemId() == R.id.action_delete) {
                 deleteSelectedAlbums();
@@ -146,8 +148,9 @@ public class SelectCustomActivity extends Activity {
         }
         
         @Override
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                boolean checked) {
+        public void onItemCheckedStateChanged(final ActionMode mode, final int position,
+                final long id,
+                final boolean checked) {
             Log.i("ActionMode", "onItemCheckedStateChanged");
             
             AlbumInfo info = mAlbumAdapter.getItem(position);
@@ -180,13 +183,13 @@ public class SelectCustomActivity extends Activity {
         
         private final LayoutInflater mLayoutInflater;
         
-        public AlbumAdapter(Context context, List<AlbumInfo> list) {
+        public AlbumAdapter(final Context context, final List<AlbumInfo> list) {
             super(context, R.layout.item_album, list);
             mLayoutInflater = LayoutInflater.from(context);
         }
         
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             AlbumViewHolder holder;
             View view = convertView;
             
@@ -243,7 +246,7 @@ public class SelectCustomActivity extends Activity {
         private final AlbumViewHolder mHolder;
         private final File mFile;
         
-        public AlbumTarget(AlbumInfo info, AlbumViewHolder holder, File file) {
+        public AlbumTarget(final AlbumInfo info, final AlbumViewHolder holder, final File file) {
             mInfo = info;
             mHolder = holder;
             mFile = file;
@@ -251,12 +254,12 @@ public class SelectCustomActivity extends Activity {
         
         
         @Override
-        public void onPrepareLoad(Drawable arg0) {
+        public void onPrepareLoad(final Drawable arg0) {
             
         }
         
         @Override
-        public void onBitmapLoaded(Bitmap bitmap, LoadedFrom from) {
+        public void onBitmapLoaded(final Bitmap bitmap, final LoadedFrom from) {
             
             if (mHolder.albumId == mInfo.id) {
                 mHolder.cover.setImageBitmap(bitmap);
@@ -283,7 +286,7 @@ public class SelectCustomActivity extends Activity {
             }
         }
         @Override
-        public void onBitmapFailed(Drawable arg0) {
+        public void onBitmapFailed(final Drawable arg0) {
             // TODO Auto-generated method stub
             
         }

@@ -27,6 +27,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.deezer.sdk.model.Album;
@@ -121,6 +122,16 @@ public class SearchAlbumActivity extends Activity {
         });
     }
     
+    private void showToast(final int resource) {
+        runOnUiThread(new Runnable() {
+            
+            @Override
+            public void run() {
+                Toast.makeText(SearchAlbumActivity.this, resource, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////////
     // On Item Click listener
     //////////////////////////////////////////////////////////////////////////////////////
@@ -208,31 +219,36 @@ public class SearchAlbumActivity extends Activity {
         @Override
         public void onOAuthException(final OAuthException e, final Object requestId) {
             hideProgress();
-            Log.e("Search", "onOAuthException", e);
+            showToast(R.string.error_search_albums);
+//            Log.e("Search", "onOAuthException", e);
         }
         
         @Override
         public void onMalformedURLException(final MalformedURLException e, final Object requestId) {
             hideProgress();
-            Log.e("Search", "onMalformedURLException", e);
+            showToast(R.string.error_search_albums);
+//            Log.e("Search", "onMalformedURLException", e);
         }
         
         @Override
         public void onIOException(final IOException e, final Object requestId) {
             hideProgress();
-            Log.e("Search", "onIOException", e);
+            showToast(R.string.error_search_albums);
+//            Log.e("Search", "onIOException", e);
         }
         
         @Override
         public void onDeezerError(final DeezerError e, final Object requestId) {
             hideProgress();
-            Log.e("Search", "onDeezerError", e);
+            showToast(R.string.error_search_albums);
+//            Log.e("Search", "onDeezerError", e);
         }
         
         @Override
         public void onJSONParseException(final JSONException e, final Object requestId) {
             hideProgress();
-            Log.e("Search", "onJSONParseException", e);
+            showToast(R.string.error_search_albums);
+//            Log.e("Search", "onJSONParseException", e);
         }
     };
     

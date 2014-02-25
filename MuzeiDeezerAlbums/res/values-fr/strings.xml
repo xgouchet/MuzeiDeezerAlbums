@@ -26,6 +26,9 @@
 	<!--  -->
 	<string name="custom_album_empty">"Pas d'album selectionné"</string>
 	<string name="custom_album_no_result">Aucun album correspondant à cette recherche</string>
+	<string name="error_user_info">"Impossible de récuperer les informations de l'utilisateur"</string>
+	<string name="error_editos_list">"Impossible de récuperer la liste des éditos"</string>
+	<string name="error_search_albums">"Impossible d'effectuer la recherche"</string>
 
 	<!--  -->
 	<string name="schedule_1_hour">Toutes les heures</string>

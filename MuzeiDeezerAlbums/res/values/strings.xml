@@ -37,6 +37,9 @@
 	<!-- Error messages -->
 	<string name="deezer_error_during_login">Deezer error during login</string>
 	<string name="invalid_credentials">Invalid credentials</string>
+	<string name="error_user_info">Unable to fetch user information</string>
+	<string name="error_editos_list">Unable to fetch the list of editos</string>
+	<string name="error_search_albums">Unable to perform the search</string>
 
 	<!--  -->
 	<string name="desc_edito">"Display covers of albums in the week's selection. You can edit the genre of music for the selection. "</string>

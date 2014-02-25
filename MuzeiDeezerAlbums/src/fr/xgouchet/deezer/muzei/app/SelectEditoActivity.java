@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 
@@ -26,6 +27,7 @@ import com.deezer.sdk.network.request.event.DeezerError;
 import com.deezer.sdk.network.request.event.OAuthException;
 import com.deezer.sdk.network.request.event.RequestListener;
 
+import fr.xgouchet.deezer.muzei.R;
 import fr.xgouchet.deezer.muzei.data.EditoDao;
 import fr.xgouchet.deezer.muzei.data.EditoInfo;
 import fr.xgouchet.deezer.muzei.util.Constants;
@@ -99,7 +101,15 @@ public class SelectEditoActivity extends ListActivity {
         }
     }
     
-    
+    private void showToast(final int resource) {
+        runOnUiThread(new Runnable() {
+            
+            @Override
+            public void run() {
+                Toast.makeText(SelectEditoActivity.this, resource, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
     
     //////////////////////////////////////////////////////////////////////////////////////
     // List View Item Selection listener
@@ -147,7 +157,8 @@ public class SelectEditoActivity extends ListActivity {
                 
             }
             catch (Exception e) {
-                Log.e("Select", "onComplete", e);
+                showToast(R.string.error_editos_list);
+//                Log.e("Select", "onComplete", e);
             }
             
         }
@@ -161,19 +172,22 @@ public class SelectEditoActivity extends ListActivity {
         @Override
         public void onMalformedURLException(final MalformedURLException e, final Object requestId) {
             hideProgress();
-            Log.e("Select", "onMalformedURLException", e);
+            showToast(R.string.error_editos_list);
+//            Log.e("Select", "onMalformedURLException", e);
         }
         
         @Override
         public void onIOException(final IOException e, final Object requestId) {
             hideProgress();
-            Log.e("Select", "onIOException", e);
+            showToast(R.string.error_editos_list);
+//            Log.e("Select", "onIOException", e);
         }
         
         @Override
         public void onDeezerError(final DeezerError e, final Object requestId) {
             hideProgress();
-            Log.e("Select", "onDeezerError", e);
+            showToast(R.string.error_editos_list);
+//            Log.e("Select", "onDeezerError", e);
         }
         
         private List<EditoInfo> parseResponse(final String response)

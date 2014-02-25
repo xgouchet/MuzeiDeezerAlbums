@@ -2,6 +2,7 @@ package fr.xgouchet.deezer.muzei.app;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Date;
 
 import org.json.JSONException;
 
@@ -306,6 +307,16 @@ public class SettingsActivity extends Activity {
         }
     }
     
+    private void showToast(final int resource) {
+        runOnUiThread(new Runnable() {
+            
+            @Override
+            public void run() {
+                Toast.makeText(SettingsActivity.this, resource, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////////
     // User Info Request Listener
     //////////////////////////////////////////////////////////////////////////////////////
@@ -318,6 +329,7 @@ public class SettingsActivity extends Activity {
             
             runOnUiThread(new Runnable() {
                 
+                @SuppressWarnings("deprecation")
                 @Override
                 public void run() {
                     Preferences.saveCurrentUser(SettingsActivity.this, user);
@@ -326,6 +338,15 @@ public class SettingsActivity extends Activity {
                     mUserName.setText(user.getName());
                     
                     // Add icons if birthday !
+                    Date birthday = user.getBirthday();
+                    Date today = new Date();
+                    if ((birthday.getMonth() == today.getMonth())
+                            && (birthday.getDate() == today.getDate())) {
+                        mUserName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_birthday,
+                                0, R.drawable.ic_birthday, 0);
+                    } else {
+                        mUserName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    }
                     
                     // get the user icon
                     new FetchUserThumbnailTask(
@@ -337,28 +358,33 @@ public class SettingsActivity extends Activity {
         
         @Override
         public void onOAuthException(final OAuthException e, final Object requestId) {
-            Log.e("Settings", "onOAuthException", e);
+            showToast(R.string.error_user_info);
+//            Log.e("Settings", "onOAuthException", e);
         }
         
         @Override
         public void onMalformedURLException(final MalformedURLException e, final Object requestId) {
-            Log.e("Settings", "onMalformedURLException", e);
+            showToast(R.string.error_user_info);
+//            Log.e("Settings", "onMalformedURLException", e);
         }
         
         @Override
         public void onIOException(final IOException e, final Object requestId) {
-            Log.e("Settings", "onIOException", e);
+            showToast(R.string.error_user_info);
+//            Log.e("Settings", "onIOException", e);
         }
         
         @Override
         public void onDeezerError(final DeezerError e, final Object requestId) {
-            Log.e("Settings", "onDeezerError", e);
+            showToast(R.string.error_user_info);
+//            Log.e("Settings", "onDeezerError", e);
         }
         
         
         @Override
         public void onJSONParseException(final JSONException e, final Object arg1) {
-            Log.e("Settings", "onJSONParseException", e);
+            showToast(R.string.error_user_info);
+//            Log.e("Settings", "onJSONParseException", e);
         }
     };
     
@@ -406,8 +432,6 @@ public class SettingsActivity extends Activity {
         
         @Override
         public void onCancel() {
-            Toast.makeText(SettingsActivity.this, R.string.login_cancelled,
-                    Toast.LENGTH_LONG).show();
         }
         
         @Override
