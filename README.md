@@ -1,4 +1,4 @@
-![MuzeiDeezer icon](https://raw.github.com/xgouchet/MuzeiDeezerAlbums/master/art/store_muzei_deezer_icon.png)
+![MuzeiDeezer icon](https://github.com/xgouchet/MuzeiDeezerAlbums/raw/master/art/store_muzei_deezer_icon.png)
 
 MuzeiDeezerAlbums
 =================
